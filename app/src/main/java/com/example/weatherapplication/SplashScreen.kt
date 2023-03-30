@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
+import com.example.weatherapplication.dialog.Dialog
 
 class SplashScreen : AppCompatActivity() {
   lateinit  var lottieAnimationView: LottieAnimationView
@@ -15,7 +16,7 @@ class SplashScreen : AppCompatActivity() {
         lottieAnimationView.animate().translationX(2000f).setDuration(2300)
             .setStartDelay(4000)
         Handler().postDelayed({
-            var intent = Intent(this ,MainActivity::class.java)
+            var intent = Intent(this , Dialog::class.java)
             startActivity(intent)
             finish()
         }, 4000)

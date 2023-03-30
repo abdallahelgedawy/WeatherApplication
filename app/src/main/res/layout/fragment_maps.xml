@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".maps.MapsFragment"
+    >
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:id="@+id/done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="4dp"
+            android:background="@color/white"
+            android:src="@drawable/baseline_done_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible" />
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="687dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/done"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:context=".maps.MapsFragment"
+            tools:layout="@layout/fragment_maps">
+
+        </fragment>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <EditText
+        android:id="@+id/SearchEdt"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@android:color/white"
+        android:drawableStart="@drawable/baseline_location_on_24"
+        android:drawablePadding="10dp"
+        android:drawableTint="@android:color/holo_red_light"
+        android:hint="Search Your Location"
+        android:imeOptions="actionSearch"
+        android:paddingStart="10dp"
+        android:singleLine="true"
+        android:textColorHint="@color/dark"
+        android:textSize="16sp" />
+
+
+</RelativeLayout>

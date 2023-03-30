@@ -12,12 +12,17 @@ import kotlinx.coroutines.launch
 class HomeViewModel(private val repo : RepositoryInterface) : ViewModel() {
 private var data :MutableLiveData<Data> = MutableLiveData()
      val mydata : LiveData<Data> = data
+    private var long: Double = 0.0
+    private var lat : Double = 0.0
     init {
-        getData()
+        getData(long , lat)
     }
-    fun getData(){
+    fun getData(long: Double , lat: Double) {
         viewModelScope.launch(Dispatchers.IO) {
-            data.postValue(repo.getData(  26.8206 ,30.8025))
+            data.postValue(repo.getData(long, lat))
         }
     }
+
+
+
 }

@@ -5,30 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/homepage"
-    android:elevation="20dp"
-    tools:context=".MainActivity">
+    android:elevation="20dp">
+
     <fragment
-        android:id="@+id/fragmentContainerView4"
+        android:id="@+id/fragmentContainerView"
         android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
+        android:layout_width="match_parent"
+        android:layout_height="672dp"
         app:defaultNavHost="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintBottom_toTopOf="@+id/bottomnavigation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navGraph="@navigation/nav_graph" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomnavigation"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/nav_bar">
+        app:menu="@menu/nav_bar"></com.google.android.material.bottomnavigation.BottomNavigationView>
 
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
+
 
 
 

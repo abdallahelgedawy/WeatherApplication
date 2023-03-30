@@ -7,17 +7,17 @@
 
     <fragment
         android:id="@+id/favorite"
-        android:name="com.example.weatherapplication.Favorite"
+        android:name="com.example.weatherapplication.favorite.Favorite"
         android:label="fragment_favorite"
         tools:layout="@layout/fragment_favorite" />
     <fragment
         android:id="@+id/settings2"
-        android:name="com.example.weatherapplication.Settings"
+        android:name="com.example.weatherapplication.settings.Settings1"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
     <fragment
         android:id="@+id/alert2"
-        android:name="com.example.weatherapplication.Alert"
+        android:name="com.example.weatherapplication.alert.Alert"
         android:label="fragment_alert"
         tools:layout="@layout/fragment_alert" />
     <fragment
@@ -25,4 +25,15 @@
         android:name="com.example.weatherapplication.home.view.Home"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.example.weatherapplication.MainActivity"
+        android:label="activity_main"
+        app:action="dia"
+        tools:layout="@layout/activity_main" />
+    <activity
+        android:id="@+id/dialog"
+        android:name="com.example.weatherapplication.dialog.Dialog"
+        android:label="activity_dialog2"
+        tools:layout="@layout/activity_dialog2" />
 </navigation>

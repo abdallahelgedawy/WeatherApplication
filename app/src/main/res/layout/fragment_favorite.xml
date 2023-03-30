@@ -5,17 +5,16 @@
     android:id="@+id/favorite"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Favorite">
+    tools:context=".favorite.Favorite">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="145dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="156dp"
-        android:layout_marginTop="328dp"
-        android:text="Fav"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_fav"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="27dp"
+        android:layout_marginBottom="100dp"
+        android:clickable="true"
+        android:src="@drawable/baseline_favorite_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
