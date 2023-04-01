@@ -5,7 +5,7 @@
     android:id="@+id/favorite"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".favorite.Favorite">
+    tools:context=".favorite.view.Favorite">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_fav"
@@ -15,6 +15,13 @@
         android:layout_marginBottom="100dp"
         android:clickable="true"
         android:src="@drawable/baseline_favorite_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_fav"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

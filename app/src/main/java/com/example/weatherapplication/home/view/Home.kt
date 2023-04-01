@@ -29,6 +29,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weatherapplication.maps.MapsFragment
 import com.example.weatherapplication.R
+import com.example.weatherapplication.dB.ConcreteLocalSource
+import com.example.weatherapplication.dB.DataDao
 import com.example.weatherapplication.home.viewModel.HomeViewModel
 import com.example.weatherapplication.home.viewModel.HomeViewModelFactory
 import com.example.weatherapplication.model.Repository
@@ -129,7 +131,9 @@ class Home : Fragment() {
 
 
         requestNewLocationData()
-            homeViewModelFactory = HomeViewModelFactory(Repository.getInstance(WeatherClient.getInstance()))
+            homeViewModelFactory = HomeViewModelFactory(Repository.getInstance
+                (WeatherClient.getInstance()
+                ,ConcreteLocalSource.getInstance(requireContext())))
             homeViewModel = ViewModelProvider(this, homeViewModelFactory).get(HomeViewModel::class.java)
         homeViewModel.mydata.observe(requireActivity()){
             var simpleDate = SimpleDateFormat("dd/M/yyyy")

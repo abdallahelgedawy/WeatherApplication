@@ -54,18 +54,7 @@ class MapsFragment(var listener: Close) : Fragment()  {
         search = view.findViewById(R.id.SearchEdt)
         save = view.findViewById(R.id.done)
         save.setOnClickListener {
-            Log.i("TAG", "onViewCreated:Clicked ")
-           // Navigation.findNavController(requireView()).navigate(R.id.map_to_home)
-           // Navigation.findNavController(requireView()).navigate(R.id.map_to_home)
-            /*val fragment = Home()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.home, fragment)
-                .commit()
-
-             */
-
             listener.close()
-
         }
 
 

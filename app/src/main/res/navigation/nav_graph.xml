@@ -7,9 +7,13 @@
 
     <fragment
         android:id="@+id/favorite"
-        android:name="com.example.weatherapplication.favorite.Favorite"
+        android:name="com.example.weatherapplication.favorite.view.Favorite"
         android:label="fragment_favorite"
-        tools:layout="@layout/fragment_favorite" />
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/fav_maps"
+            app:destination="@id/favMaps" />
+    </fragment>
     <fragment
         android:id="@+id/settings2"
         android:name="com.example.weatherapplication.settings.Settings1"
@@ -36,4 +40,13 @@
         android:name="com.example.weatherapplication.dialog.Dialog"
         android:label="activity_dialog2"
         tools:layout="@layout/activity_dialog2" />
+    <fragment
+        android:id="@+id/favMaps"
+        android:name="com.example.weatherapplication.favorite.view.FavMaps"
+        android:label="fragment_fav_maps"
+        tools:layout="@layout/fragment_fav_maps" >
+        <action
+            android:id="@+id/maps_fav"
+            app:destination="@id/favorite" />
+    </fragment>
 </navigation>

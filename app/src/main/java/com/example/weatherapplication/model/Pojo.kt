@@ -1,6 +1,11 @@
 package com.example.weatherapplication.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+
 data class Data (
+
     val lat: Double,
     val lon: Double,
     val timezone: String,
@@ -10,6 +15,12 @@ data class Data (
     val minutely: List<Minutely>,
     val hourly: List<Current>,
     val daily: List<Daily>
+)
+@Entity(tableName = "data")
+data class Location(
+    @PrimaryKey
+    val lat: Double,
+    val lon: Double
 )
 
 data class Current (
