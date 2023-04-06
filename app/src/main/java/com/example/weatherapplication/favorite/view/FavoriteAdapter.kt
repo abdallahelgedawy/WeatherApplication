@@ -3,6 +3,7 @@ package com.example.weatherapplication.favorite.view
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.os.Bundle
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,8 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weatherapplication.R
@@ -56,6 +59,15 @@ class FavoriteAdapter (private var data: List<Location>
             holder.delete.setOnClickListener {
                 Listener.Remove(data.get(0))
             }
+            holder.card.setOnClickListener {
+              val lat =   data.get(0).lat
+              val lon =   data.get(0).lon
+                val args = Bundle().apply {
+                    putDouble("longitude", lat)
+                    putDouble("latitude", lon)
+                }
+                it.findNavController().navigate(R.id.fav_details,args)
+            }
 
         }
             fun setList(data: List<Location>){
@@ -65,8 +77,7 @@ class FavoriteAdapter (private var data: List<Location>
         class ViewHolder( private val itemview : View) : RecyclerView.ViewHolder(itemview) {
           val country : TextView = itemView.findViewById(R.id.tv_country)
             val delete :ImageButton = itemview.findViewById(R.id.img_delete)
-
-
+            val card : CardView  = itemView.findViewById(R.id.card)
         }
 
     }

@@ -10,5 +10,7 @@ interface WeatherService {
 @GET("onecall")
 suspend fun getWeather(@Query("lat") lat:Double   ,
     @Query("lon") lon: Double  ,
+    @Query("units") units :String ,
+    @Query("lang") lang: String ,
     @Query("appid") appid:String = "c0e2a3fc4f1e96050875af44033af784" ): Response<Data>
 }

@@ -13,11 +13,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import com.example.weatherapplication.dialog.Close
 import com.example.weatherapplication.R
+import com.example.weatherapplication.dialog.Close
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap

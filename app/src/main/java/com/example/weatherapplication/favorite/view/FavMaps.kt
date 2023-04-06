@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageButton
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.weatherapplication.R
@@ -89,8 +90,6 @@ class FavMaps : Fragment() {
         fav.setOnClickListener {
             view.findNavController().navigate(R.id.maps_fav)
             favoriteViewModel.addToFavorite(addresses!!.get(0).longitude ,addresses!!.get(0).longitude )
-
-
                 }
 
         search.setOnEditorActionListener { textView, i, keyEvent ->

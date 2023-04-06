@@ -14,12 +14,14 @@ private var data :MutableLiveData<Data> = MutableLiveData()
      val mydata : LiveData<Data> = data
     private var long: Double = 0.0
     private var lat : Double = 0.0
+    private var units : String = ""
+    private var lang : String = ""
     init {
-        getData(long , lat)
+        getData(long , lat , units, lang)
     }
-    fun getData(long: Double , lat: Double) {
+    fun getData(long: Double , lat: Double , units : String , lang : String) {
         viewModelScope.launch(Dispatchers.IO) {
-            data.postValue(repo.getData(long, lat))
+            data.postValue(repo.getData(long, lat, units , lang))
         }
     }
 

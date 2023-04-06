@@ -41,7 +41,7 @@ class WeeksAdapter(private var data: List<Daily>, context : Context) : RecyclerV
             holder.weeks.text = day
             Glide.with(context).load(url).into(holder.img)
             holder.desc.text = mydata.weather.get(0).description
-            holder.temp.text = "$max/$min C"
+            holder.temp.text = "$max/$min "
         }
 
         override fun getItemCount(): Int {

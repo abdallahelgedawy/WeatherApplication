@@ -16,8 +16,8 @@ class Repository private constructor(var remoteSource: RemoteSource , var localS
         }
     }
 
-    override suspend fun getData(lat : Double , long : Double): Data {
-        return remoteSource.getData(lat , long)
+    override suspend fun getData(lat : Double , long : Double , units : String , lang : String): Data {
+        return remoteSource.getData(lat , long , units , lang)
     }
 
     override fun getstoredData(): List<Location> {

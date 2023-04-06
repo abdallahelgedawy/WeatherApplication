@@ -22,9 +22,9 @@ class WeatherClient : RemoteSource {
 
 
 
-    override suspend fun getData(long : Double , lat : Double): Data {
+    override suspend fun getData(long : Double , lat : Double , units : String , lang : String): Data {
         var result : Data?= null
-        val response = MyApi.service.getWeather(lat , long)
+        val response = MyApi.service.getWeather(lat , long , units , lang)
         if (response.isSuccessful){
           result = response.body()!!
         }

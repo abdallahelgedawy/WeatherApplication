@@ -1,9 +1,12 @@
 package com.example.weatherapplication.favorite.view
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -38,16 +41,32 @@ class  Favorite : Fragment() , Delete  {
             recyclerView = view.findViewById(R.id.recycler_fav)
             favoriteViewModelFactory = FavoriteViewModelFactory(Repository.getInstance(WeatherClient.getInstance() , ConcreteLocalSource.getInstance(requireContext())))
             favoriteViewModel = ViewModelProvider(this , favoriteViewModelFactory).get(FavoriteViewModel::class.java)
-            favoriteViewModel.finalData.observe(requireActivity()){
-                adapter = FavoriteAdapter(it  , this , requireContext())
-                mylayoutManager = LinearLayoutManager(requireContext())
-                recyclerView.adapter = adapter
-                recyclerView.layoutManager = mylayoutManager
-                adapter.setList(it)
-                adapter.notifyDataSetChanged()
+            favoriteViewModel.finalData.observe(requireActivity()) {
+                if (it.size > 0) {
+                    adapter = FavoriteAdapter(it, this, requireContext())
+                    mylayoutManager = LinearLayoutManager(requireContext())
+                    recyclerView.adapter = adapter
+                    recyclerView.layoutManager = mylayoutManager
+                    adapter.setList(it)
+                    adapter.notifyDataSetChanged()
+                    val args = Bundle().apply {
+                        putDouble("longitude", it.get(0).lon)
+                        putDouble("latitude", it.get(0).lat)
+                    }
+                }else{
+                    Toast.makeText(requireContext() , "No Data available" , Toast.LENGTH_SHORT).show()
+                }
             }
 
-        }
+
+
+
+
+
+            }
+
+
+
 
 
 

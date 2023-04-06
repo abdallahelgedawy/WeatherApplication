@@ -31,10 +31,10 @@ class FavoriteViewModel(private val repo : RepositoryInterface) : ViewModel() {
         }
     }
 
-    fun addToFavorite(long : Double , lat : Double) {
+    fun addToFavorite(long : Double , lat : Double ) {
         viewModelScope.launch(Dispatchers.IO) {
             repo.insertData(Location(lat , long))
-            repo.getData(lat , long)
+            repo.getData(lat , long , units = "metric" , lang = "ar")
         }
 
     }

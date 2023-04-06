@@ -35,7 +35,7 @@ class HoursAdapter
             holder.temp.text = mydata.temp.toString()
             holder.wind.setImageResource(R.drawable.wind)
             holder.img_dew.setImageResource(R.drawable.dew)
-            holder.tv_wind.text = mydata.wind_speed.toString()+"Km/h"
+            holder.tv_wind.text = mydata.wind_speed.toString()
             holder.dew.text = mydata.dew_point.toString() + "%"
         }
 

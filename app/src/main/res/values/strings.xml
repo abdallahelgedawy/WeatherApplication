@@ -31,6 +31,19 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="Save">Save</string>
+    <string name="Gps">Gps</string>
+    <string name="Maps">Maps</string>
+    <string name="Language">Language</string>
+    <string name="English">English</string>
+    <string name="Arabic">Arabic</string>
+    <string name="MeterSec">Meter/Sec</string>
+    <string name="MileHour">Mile/Hour</string>
+    <string name="Celesius">Celesius</string>
+    <string name="Fahrenhit">Fahrenhit</string>
+    <string name="Kelvin">Kelvin</string>
+    <string name="Standard">Standard</string> />
+    <string name="Metric">Metric</string>
+    <string name="Imprial">Imprial</string>
     />
     />
 </resources>

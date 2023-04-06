@@ -35,6 +35,7 @@ import com.example.weatherapplication.home.viewModel.HomeViewModel
 import com.example.weatherapplication.home.viewModel.HomeViewModelFactory
 import com.example.weatherapplication.model.Repository
 import com.example.weatherapplication.network.WeatherClient
+import com.example.weatherapplication.settings.Settings1
 import com.google.android.gms.location.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.text.SimpleDateFormat
@@ -77,6 +78,14 @@ class Home : Fragment() {
     lateinit var mapsFragment: MapsFragment
     lateinit var shared : SharedPreferences
     lateinit var dialogShared : SharedPreferences
+    lateinit var langShared : SharedPreferences
+    lateinit var settings : Settings1
+    lateinit var key1 : String
+    lateinit var key2 : String
+    lateinit var lan :String
+    lateinit var Temp_shared : SharedPreferences
+    lateinit var temper : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -127,6 +136,10 @@ class Home : Fragment() {
         recyclervieweeks = view.findViewById(R.id.weeks)
          shared = requireActivity().getSharedPreferences("MapPreferences" , Context.MODE_PRIVATE)
         dialogShared =requireActivity().getSharedPreferences("Dialog" , Context.MODE_PRIVATE)
+        langShared = requireActivity().getSharedPreferences("language" , Context.MODE_PRIVATE)
+         settings = Settings1()
+        Temp_shared = requireActivity().getSharedPreferences("temp" , Context.MODE_PRIVATE)
+
 
 
 
@@ -156,7 +169,7 @@ class Home : Fragment() {
             img_pressure.setImageResource(R.drawable.pressure)
             descpress.text = it.current.pressure.toString() + " hpa"
             img_wind.setImageResource(R.drawable.wind)
-            desc_wind.text = it.current.wind_speed.toString() + "m/s"
+            desc_wind.text = it.current.wind_speed.toString()
             img_cloud.setImageResource(R.drawable.cloud)
             desc_cloud.text = it.current.clouds.toString() + "%"
             img_uvi.setImageResource(R.drawable.uvi)
@@ -223,24 +236,12 @@ class Home : Fragment() {
             myLocationRequest,
             object : LocationCallback() {
                 override fun onLocationResult(p0: LocationResult?) {
-                    val key1 = dialogShared.getString("GPS" , "")
-                    val key2 = dialogShared.getString("Maps" ,"")
-                    if (key1 == "gps"){
+
+                    Log.i("TAG", "onLocationResult: " + lan.toString())
                         val myLastLocation: Location = p0!!.lastLocation
                         latitude = myLastLocation.latitude
                         longitude = myLastLocation.longitude
-                        homeViewModel.getData(longitude , latitude)
                         myFusedLocationClient.removeLocationUpdates(this)
-                        Log.i("TAG", "onLocationResult: gedo" )
-                    }
-                     if (key2 == "maps") {
-                        val lat = shared.getFloat("latitude", 0.0f)
-                        val long = shared.getFloat("longitude", 0.0f)
-                        Log.i("TAG", "onLocationResult: " + lat)
-                        homeViewModel.getData(lat.toDouble(), long.toDouble())
-                    }
-
-
 
                 }
             },
@@ -251,6 +252,21 @@ class Home : Fragment() {
     override fun onResume() {
         super.onResume()
         getLastLocation()
-
+        key1 = dialogShared.getString("GPS" , "")!!
+        key2 = dialogShared.getString("Maps" ,"")!!
+        lan = langShared.getString("language" , "")!!
+        temper= Temp_shared.getString("temp" , "")!!
+        if (key1 == "gps"){
+            homeViewModel.getData(longitude , latitude , temper, lan)
+        }
+        if (key2 == "maps"){
+            val lat = shared.getFloat("latitude", 0.0f)
+            val long = shared.getFloat("longitude", 0.0f)
+            homeViewModel.getData(lat.toDouble(), long.toDouble() , temper , lan)
+        }
+        if (lan != null) {
+            settings.setLocal(lan , requireContext())
+            Log.i("mizo", "onLocationResult: " + lan)
+        }
     }
 }
