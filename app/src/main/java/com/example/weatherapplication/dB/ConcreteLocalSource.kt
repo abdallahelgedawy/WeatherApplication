@@ -3,6 +3,7 @@ package com.example.weatherapplication.dB
 import android.content.Context
 import com.example.weatherapplication.alert.TimeDate
 import com.example.weatherapplication.model.Location
+import kotlinx.coroutines.flow.Flow
 
 class ConcreteLocalSource private constructor(val context: Context) : LocalSource{
     private val dataDao : DataDao
@@ -23,7 +24,7 @@ class ConcreteLocalSource private constructor(val context: Context) : LocalSourc
         }
     }
 
-    override fun getstoredData(): List<Location> {
+    override fun getstoredData(): Flow<List<Location>> {
         return dataDao.getAllData()
     }
 
@@ -43,7 +44,7 @@ class ConcreteLocalSource private constructor(val context: Context) : LocalSourc
         dataDao.deleteDateTime(datetime)
     }
 
-    override fun getStoredDate(): List<TimeDate> {
+    override fun getStoredDate(): Flow<List<TimeDate>> {
        return dataDao.getDate()
     }
 }

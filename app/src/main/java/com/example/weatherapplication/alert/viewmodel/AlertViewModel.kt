@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherapplication.alert.TimeDate
 import com.example.weatherapplication.model.RepositoryInterface
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
@@ -18,7 +19,10 @@ class AlertViewModel(private val repo : RepositoryInterface) :  ViewModel(){
     }
     private fun getDate() {
         viewModelScope.launch(Dispatchers.IO) {
-            mydateTime.postValue(repo.getStoredDate())
+          //  mydateTime.postValue(repo.getStoredDate())
+            repo.getStoredDate().collect(){
+                mydateTime.postValue(it)
+            }
         }
     }
     fun addToAlarm(date : TimeDate) {

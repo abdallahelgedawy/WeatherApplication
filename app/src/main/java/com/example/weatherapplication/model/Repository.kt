@@ -3,6 +3,7 @@ package com.example.weatherapplication.model
 import com.example.weatherapplication.alert.TimeDate
 import com.example.weatherapplication.dB.LocalSource
 import com.example.weatherapplication.network.RemoteSource
+import kotlinx.coroutines.flow.Flow
 
 class Repository private constructor(var remoteSource: RemoteSource , var localSource: LocalSource) : RepositoryInterface{
     companion object{
@@ -17,11 +18,11 @@ class Repository private constructor(var remoteSource: RemoteSource , var localS
         }
     }
 
-    override suspend fun getData(lat : Double , long : Double , units : String , lang : String): Data {
+    override suspend fun getData(lat : Double , long : Double , units : String , lang : String): Flow<Data> {
         return remoteSource.getData(lat , long , units , lang)
     }
 
-    override fun getstoredData(): List<Location> {
+    override fun getstoredData(): Flow<List<Location>> {
         return localSource.getstoredData()
     }
 
@@ -41,7 +42,7 @@ class Repository private constructor(var remoteSource: RemoteSource , var localS
          localSource.deleteDateTime(datetime)
     }
 
-    override fun getStoredDate(): List<TimeDate> {
+    override fun getStoredDate(): Flow<List<TimeDate>> {
         return localSource.getStoredDate()
     }
 

@@ -8,6 +8,7 @@ import com.example.weatherapplication.model.Data
 import com.example.weatherapplication.model.Location
 import com.example.weatherapplication.model.RepositoryInterface
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class FavoriteViewModel(private val repo : RepositoryInterface) : ViewModel() {
@@ -20,7 +21,10 @@ class FavoriteViewModel(private val repo : RepositoryInterface) : ViewModel() {
 
     private fun getFavData() {
         viewModelScope.launch(Dispatchers.IO) {
-            myData.postValue(repo.getstoredData())
+            //myData.postValue(repo.getstoredData())
+            repo.getstoredData().collect(){
+                myData.postValue(it)
+            }
         }
     }
 

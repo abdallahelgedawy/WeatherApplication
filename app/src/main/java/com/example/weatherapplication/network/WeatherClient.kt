@@ -4,6 +4,8 @@ import android.util.Log
 import com.example.weatherapplication.MainActivity
 import com.example.weatherapplication.model.Data
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -22,13 +24,13 @@ class WeatherClient : RemoteSource {
 
 
 
-    override suspend fun getData(long : Double , lat : Double , units : String , lang : String): Data {
+    override suspend fun getData(long : Double , lat : Double , units : String , lang : String): Flow<Data> {
         var result : Data?= null
         val response = MyApi.service.getWeather(lat , long , units , lang)
         if (response.isSuccessful){
           result = response.body()!!
         }
-        return result!!
+        return flowOf(result!!)
     }
 
 
