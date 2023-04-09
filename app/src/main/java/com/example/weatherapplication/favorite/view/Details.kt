@@ -80,7 +80,7 @@ class Details : Fragment() {
         desc_vis = view.findViewById(R.id.tv_Descvis)
         recyclervieweeks = view.findViewById(R.id.weeks)
         if (savedInstanceState != null) {
-            lon = savedInstanceState.getDouble("Longitude")
+            lon = savedInstanceState.getDouble("longitude")
             lat = savedInstanceState.getDouble("latitude")
         }
         homeViewModelFactory = HomeViewModelFactory(

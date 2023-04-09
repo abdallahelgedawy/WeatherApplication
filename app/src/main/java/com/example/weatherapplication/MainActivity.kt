@@ -18,11 +18,16 @@ class MainActivity : AppCompatActivity(){
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomnavigation)
         val navController = findNavController(R.id.fragmentContainerView)
         bottomNavigationView.setupWithNavController(navController)
+
     }
 
-        override fun onResume() {
+
+
+
+    override fun onResume() {
         super.onResume()
         }
+
 
 
     }

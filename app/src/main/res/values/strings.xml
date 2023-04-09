@@ -41,7 +41,8 @@
     <string name="Celesius">Celesius</string>
     <string name="Fahrenhit">Fahrenhit</string>
     <string name="Kelvin">Kelvin</string>
-    <string name="Standard">Standard</string> />
+    <string name="Standard">Standard</string>
+    />
     <string name="Metric">Metric</string>
     <string name="Imprial">Imprial</string>
     />

@@ -47,26 +47,26 @@ const val Permission_ID = 15
 
 class Home : Fragment() {
     private lateinit var myLocationRequest: LocationRequest
-    lateinit var country : TextView
-    lateinit var description : TextView
-    lateinit var icon1 : ImageView
-    lateinit var temp : TextView
-    lateinit var d_t : TextView
+    lateinit var country: TextView
+    lateinit var description: TextView
+    lateinit var icon1: ImageView
+    lateinit var temp: TextView
+    lateinit var d_t: TextView
     lateinit var recyclerView: RecyclerView
     lateinit var adapter: HoursAdapter
     lateinit var mylayoutManager: LinearLayoutManager
-    lateinit var img_humidity : ImageView
-    lateinit var desc_hum : TextView
-    lateinit var img_pressure : ImageView
-    lateinit var descpress : TextView
-    lateinit var img_wind : ImageView
-    lateinit var desc_wind : TextView
-    lateinit var img_cloud : ImageView
-    lateinit var desc_cloud : TextView
-    lateinit var img_uvi : ImageView
-    lateinit var desc_uvi : TextView
-    lateinit var img_vis : ImageView
-    lateinit var desc_vis : TextView
+    lateinit var img_humidity: ImageView
+    lateinit var desc_hum: TextView
+    lateinit var img_pressure: ImageView
+    lateinit var descpress: TextView
+    lateinit var img_wind: ImageView
+    lateinit var desc_wind: TextView
+    lateinit var img_cloud: ImageView
+    lateinit var desc_cloud: TextView
+    lateinit var img_uvi: ImageView
+    lateinit var desc_uvi: TextView
+    lateinit var img_vis: ImageView
+    lateinit var desc_vis: TextView
     lateinit var recyclervieweeks: RecyclerView
     lateinit var adapterweeks: WeeksAdapter
     lateinit var mylayoutManagerweeks: LinearLayoutManager
@@ -76,15 +76,16 @@ class Home : Fragment() {
     var latitude: Double = 0.0
     var longitude: Double = 0.0
     lateinit var mapsFragment: MapsFragment
-    lateinit var shared : SharedPreferences
-    lateinit var dialogShared : SharedPreferences
-    lateinit var langShared : SharedPreferences
-    lateinit var settings : Settings1
-    lateinit var key1 : String
-    lateinit var key2 : String
-    lateinit var lan :String
-    lateinit var Temp_shared : SharedPreferences
-    lateinit var temper : String
+    lateinit var shared: SharedPreferences
+    lateinit var dialogShared: SharedPreferences
+    lateinit var langShared: SharedPreferences
+    lateinit var settings: Settings1
+    lateinit var key1: String
+    lateinit var key2: String
+    lateinit var lan: String
+    lateinit var Temp_shared: SharedPreferences
+    lateinit var temper: String
+    lateinit var sharedPreferences : SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,39 +128,46 @@ class Home : Fragment() {
         descpress = view.findViewById(R.id.tv_descpress)
         img_wind = view.findViewById(R.id.img_wind)
         desc_wind = view.findViewById(R.id.tv_descwind)
-       img_cloud = view.findViewById(R.id.img_cloud)
+        img_cloud = view.findViewById(R.id.img_cloud)
         desc_cloud = view.findViewById(R.id.tv_desccloud)
         img_uvi = view.findViewById(R.id.img_uvi)
         desc_uvi = view.findViewById(R.id.tv_descuvi)
         img_vis = view.findViewById(R.id.img_visibility)
         desc_vis = view.findViewById(R.id.tv_Descvis)
         recyclervieweeks = view.findViewById(R.id.weeks)
-         shared = requireActivity().getSharedPreferences("MapPreferences" , Context.MODE_PRIVATE)
-        dialogShared =requireActivity().getSharedPreferences("Dialog" , Context.MODE_PRIVATE)
-        langShared = requireActivity().getSharedPreferences("language" , Context.MODE_PRIVATE)
-         settings = Settings1()
-        Temp_shared = requireActivity().getSharedPreferences("temp" , Context.MODE_PRIVATE)
+        shared = requireActivity().getSharedPreferences("MapPreferences", Context.MODE_PRIVATE)
+        dialogShared = requireActivity().getSharedPreferences("Dialog", Context.MODE_PRIVATE)
+        langShared = requireActivity().getSharedPreferences("language", Context.MODE_PRIVATE)
+        settings = Settings1()
+        Temp_shared = requireActivity().getSharedPreferences("temp", Context.MODE_PRIVATE)
+         sharedPreferences =requireActivity().getSharedPreferences("api" ,Context.MODE_PRIVATE)
+
 
 
 
 
         requestNewLocationData()
-            homeViewModelFactory = HomeViewModelFactory(Repository.getInstance
-                (WeatherClient.getInstance()
-                ,ConcreteLocalSource.getInstance(requireContext())))
-            homeViewModel = ViewModelProvider(this, homeViewModelFactory).get(HomeViewModel::class.java)
-        homeViewModel.mydata.observe(requireActivity()){
+        homeViewModelFactory = HomeViewModelFactory(
+            Repository.getInstance
+                (
+                WeatherClient.getInstance(), ConcreteLocalSource.getInstance(requireContext())
+            )
+        )
+        homeViewModel = ViewModelProvider(this, homeViewModelFactory).get(HomeViewModel::class.java)
+
+        homeViewModel.mydata.observe(requireActivity()) {
             var simpleDate = SimpleDateFormat("dd/M/yyyy")
-            var currentDate = simpleDate.format(it.current.dt*1000L)
-            Log.i("TAG", "onViewCreated: "+it)
+            var currentDate = simpleDate.format(it.current.dt * 1000L)
+            Log.i("TAG", "onViewCreated: " + it)
             val url = "https://openweathermap.org/img/wn/${it.current.weather.get(0).icon}@2x.png"
             country.text = it.timezone
             description.text = it.current.weather.get(0).description
             Glide.with(requireContext()).load(url).into(icon1)
             temp.text = it.current.temp.toString()
             d_t.text = currentDate.toString()
-            adapter = HoursAdapter(it.hourly , requireContext())
-            mylayoutManager = LinearLayoutManager(requireContext() , LinearLayoutManager.HORIZONTAL , false)
+            adapter = HoursAdapter(it.hourly, requireContext())
+            mylayoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             img_humidity.setImageResource(R.drawable.humidity)
             recyclerView.adapter = adapter
             recyclerView.layoutManager = mylayoutManager
@@ -176,7 +184,7 @@ class Home : Fragment() {
             desc_uvi.text = it.current.uvi.toString()
             img_vis.setImageResource(R.drawable.visibility)
             desc_vis.text = it.current.visibility.toString() + "m"
-            adapterweeks = WeeksAdapter(it.daily , requireContext())
+            adapterweeks = WeeksAdapter(it.daily, requireContext())
             mylayoutManagerweeks = LinearLayoutManager(requireContext())
             recyclervieweeks.adapter = adapterweeks
             recyclervieweeks.layoutManager = mylayoutManagerweeks
@@ -186,6 +194,7 @@ class Home : Fragment() {
         }
 
     }
+
     @SuppressLint("MissingPermission", "SuspiciousIndentation")
     private fun CheckPermission(): Boolean {
         val result = ActivityCompat.checkSelfPermission(
@@ -195,6 +204,7 @@ class Home : Fragment() {
         ) == PackageManager.PERMISSION_GRANTED
         return result
     }
+
     private fun isLocationEnabled(): Boolean {
         val locationManager: LocationManager =
             requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -202,6 +212,7 @@ class Home : Fragment() {
             LocationManager.NETWORK_PROVIDER
         )
     }
+
     private fun requestPermissions() {
         ActivityCompat.requestPermissions(
             requireActivity(),
@@ -212,12 +223,14 @@ class Home : Fragment() {
             com.example.weatherapplication.Permission_ID
         )
     }
+
     private fun getLastLocation() {
         if (CheckPermission()) {
             if (isLocationEnabled()) {
                 requestNewLocationData()
             } else {
-                Toast.makeText(requireContext(), "Turn on the location please", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Turn on the location please", Toast.LENGTH_SHORT)
+                    .show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
             }
@@ -226,9 +239,10 @@ class Home : Fragment() {
             requestPermissions()
         }
     }
+
     @SuppressLint("MissingPermission")
     private fun requestNewLocationData() {
-         myLocationRequest = LocationRequest()
+        myLocationRequest = LocationRequest()
         myLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
         myLocationRequest.setInterval(0)
         myFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -236,14 +250,36 @@ class Home : Fragment() {
             myLocationRequest,
             object : LocationCallback() {
                 override fun onLocationResult(p0: LocationResult?) {
-
-                    Log.i("TAG", "onLocationResult: " + lan.toString())
-                        val myLastLocation: Location = p0!!.lastLocation
-                        latitude = myLastLocation.latitude
-                        longitude = myLastLocation.longitude
-                        myFusedLocationClient.removeLocationUpdates(this)
-
+                    val myLastLocation: Location = p0!!.lastLocation
+                    latitude = myLastLocation.latitude
+                    longitude = myLastLocation.longitude
+                    myFusedLocationClient.removeLocationUpdates(this)
+                    key1 = dialogShared.getString("GPS", "")!!
+                    key2 = dialogShared.getString("Maps", "")!!
+                    lan = langShared.getString("language", "")!!
+                    temper = Temp_shared.getString("temp", "")!!
+                    if (key1 == "gps") {
+                        homeViewModel.getData(longitude, latitude, temper, lan)
+                    }
+                    if (key2 == "maps") {
+                        val lat = shared.getFloat("latitude", 0.0f)
+                        val long = shared.getFloat("longitude", 0.0f)
+                        homeViewModel.getData(lat.toDouble(), long.toDouble(), temper, lan)
+                    }
+                    if (lan != null) {
+                        settings.setLocal(lan, requireContext())
+                        Log.i("mizo", "onLocationResult: " + lan)
+                    }
+                    sharedPreferences.edit().apply{
+                         putInt("longitude" , longitude.toInt())
+                         putInt("latitude" , latitude.toInt())
+                         putString("language " , lan )
+                         putString("units" , temper)
+                        apply()
+                    }
                 }
+
+
             },
             Looper.myLooper()
         )
@@ -252,21 +288,6 @@ class Home : Fragment() {
     override fun onResume() {
         super.onResume()
         getLastLocation()
-        key1 = dialogShared.getString("GPS" , "")!!
-        key2 = dialogShared.getString("Maps" ,"")!!
-        lan = langShared.getString("language" , "")!!
-        temper= Temp_shared.getString("temp" , "")!!
-        if (key1 == "gps"){
-            homeViewModel.getData(longitude , latitude , temper, lan)
-        }
-        if (key2 == "maps"){
-            val lat = shared.getFloat("latitude", 0.0f)
-            val long = shared.getFloat("longitude", 0.0f)
-            homeViewModel.getData(lat.toDouble(), long.toDouble() , temper , lan)
-        }
-        if (lan != null) {
-            settings.setLocal(lan , requireContext())
-            Log.i("mizo", "onLocationResult: " + lan)
-        }
+
     }
 }

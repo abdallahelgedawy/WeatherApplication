@@ -85,11 +85,15 @@ class FavMaps : Fragment() {
                 ConcreteLocalSource.getInstance(requireContext())
             )
         )
+       var langShared = requireActivity().getSharedPreferences("language", Context.MODE_PRIVATE)
+       var Temp_shared = requireActivity().getSharedPreferences("temp", Context.MODE_PRIVATE)
+       var lan = langShared.getString("language", "")!!
+        var temper = Temp_shared.getString("temp", "")!!
         favoriteViewModel =
             ViewModelProvider(this, favoriteViewModelFactory).get(FavoriteViewModel::class.java)
         fav.setOnClickListener {
             view.findNavController().navigate(R.id.maps_fav)
-            favoriteViewModel.addToFavorite(addresses!!.get(0).longitude ,addresses!!.get(0).longitude )
+            favoriteViewModel.addToFavorite(addresses!!.get(0).longitude ,addresses!!.get(0).longitude , lan , temper)
                 }
 
         search.setOnEditorActionListener { textView, i, keyEvent ->

@@ -1,7 +1,7 @@
 package com.example.weatherapplication.dB
 
 import android.content.Context
-import com.example.weatherapplication.model.Data
+import com.example.weatherapplication.alert.TimeDate
 import com.example.weatherapplication.model.Location
 
 class ConcreteLocalSource private constructor(val context: Context) : LocalSource{
@@ -33,5 +33,17 @@ class ConcreteLocalSource private constructor(val context: Context) : LocalSourc
 
     override suspend fun deleteData(data: Location) {
         dataDao.deleteData(data)
+    }
+
+    override suspend fun insertDateTime(datetime: TimeDate) {
+        dataDao.insertDateTime(datetime)
+    }
+
+    override suspend fun deleteDateTime(datetime: TimeDate) {
+        dataDao.deleteDateTime(datetime)
+    }
+
+    override fun getStoredDate(): List<TimeDate> {
+       return dataDao.getDate()
     }
 }
