@@ -19,6 +19,7 @@ import com.example.weatherapplication.favorite.viewModel.FavoriteViewModelFactor
 import com.example.weatherapplication.model.Data
 import com.example.weatherapplication.model.Location
 import com.example.weatherapplication.model.Repository
+import com.example.weatherapplication.network.NetworkUtils
 import com.example.weatherapplication.network.WeatherClient
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -33,8 +34,12 @@ class  Favorite : Fragment() , Delete  {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fav = view.findViewById(R.id.btn_fav)
-        fav.setOnClickListener {
-            view.findNavController().navigate(R.id.fav_maps)
+        if (NetworkUtils.getConnectivity(requireContext()) == false) {
+            Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_SHORT).show()
+        } else {
+            fav.setOnClickListener {
+                view.findNavController().navigate(R.id.fav_maps)
+            }
         }
 
 

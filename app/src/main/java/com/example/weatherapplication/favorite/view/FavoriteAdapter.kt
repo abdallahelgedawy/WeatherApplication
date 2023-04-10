@@ -9,10 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -21,34 +18,42 @@ import com.example.weatherapplication.R
 import com.example.weatherapplication.model.Current
 import com.example.weatherapplication.model.Data
 import com.example.weatherapplication.model.Location
+import com.example.weatherapplication.network.NetworkUtils
 import java.io.IOException
 import java.util.*
 
 class FavoriteAdapter (private var data: List<Location>
     , private val Listener: Delete
     , context: Context
-    ) : RecyclerView.Adapter<FavoriteAdapter.ViewHolder>(){
-        var context: Context = context
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteAdapter.ViewHolder {
+    ) : RecyclerView.Adapter<FavoriteAdapter.ViewHolder>() {
+    var context: Context = context
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteAdapter.ViewHolder {
+        if (NetworkUtils.getConnectivity(context) == false) {
+            Toast.makeText(context, "No Internet Connection", Toast.LENGTH_SHORT).show()
+        }
             val view = LayoutInflater.from(parent.context).inflate(R.layout.fav, parent, false)
 
             return ViewHolder(view)
-        }
 
-        override fun getItemCount(): Int {
-            return data.size
-        }
+    }
 
-        override fun onBindViewHolder(holder: FavoriteAdapter.ViewHolder, position: Int) {
-            var product : Location= data[position]
+    override fun getItemCount(): Int {
+        return data.size
+    }
+
+    override fun onBindViewHolder(holder: FavoriteAdapter.ViewHolder, position: Int) {
+        if (NetworkUtils.getConnectivity(context) == false) {
+            Toast.makeText(context, "No Internet Connection", Toast.LENGTH_SHORT).show()
+        } else {
+            var product: Location = data[position]
             var geoCoder = Geocoder(context, Locale.getDefault())
-            var list :List<Address> = listOf()
+            var list: List<Address> = listOf()
             try {
-                list = geoCoder.getFromLocation(product.lat,product.lon , 1) as List<Address>
-            }catch(e: IOException){
+                list = geoCoder.getFromLocation(product.lat, product.lon, 1) as List<Address>
+            } catch (e: IOException) {
                 e.printStackTrace()
             }
-            if (list.size >0) {
+            if (list.size > 0) {
                 var adress: Address = list.get(0)
                 var k = adress.subAdminArea
                 var y = adress.adminArea
@@ -59,17 +64,20 @@ class FavoriteAdapter (private var data: List<Location>
             holder.delete.setOnClickListener {
                 Listener.Remove(data.get(0))
             }
+
+
             holder.card.setOnClickListener {
-              val lat =   data.get(0).lat
-              val lon =   data.get(0).lon
+                val lat = data.get(0).lat
+                val lon = data.get(0).lon
                 val args = Bundle().apply {
                     putDouble("longitude", lat)
                     putDouble("latitude", lon)
                 }
-                it.findNavController().navigate(R.id.fav_details,args)
+                it.findNavController().navigate(R.id.fav_details, args)
             }
-
         }
+    }
+
             fun setList(data: List<Location>){
             this.data = data
 

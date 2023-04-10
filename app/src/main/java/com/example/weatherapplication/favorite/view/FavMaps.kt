@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -24,6 +25,7 @@ import com.example.weatherapplication.dB.ConcreteLocalSource
 import com.example.weatherapplication.favorite.viewModel.FavoriteViewModel
 import com.example.weatherapplication.favorite.viewModel.FavoriteViewModelFactory
 import com.example.weatherapplication.model.Repository
+import com.example.weatherapplication.network.NetworkUtils
 import com.example.weatherapplication.network.WeatherClient
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -43,22 +45,26 @@ class FavMaps : Fragment() {
     lateinit var fav: ImageButton
     lateinit var favoriteViewModel: FavoriteViewModel
     lateinit var favoriteViewModelFactory: FavoriteViewModelFactory
-     var addresses: MutableList<Address>? = null
+    var addresses: MutableList<Address>? = null
     var flag = false
 
     private val callback = OnMapReadyCallback { googleMap ->
-        map = googleMap
-        map.setOnMapClickListener { latLng ->
-            val geocoder = Geocoder(requireContext(), Locale.getDefault())
-             addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-            val countryName = addresses?.get(0)?.countryName
-            val markerTitle = "Marker in $countryName"
-            if (marker != null) {
-                marker?.remove()
+        if (NetworkUtils.getConnectivity(requireContext()) == false) {
+            Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_SHORT).show()
+        } else {
+            map = googleMap
+            map.setOnMapClickListener { latLng ->
+                val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+                val countryName = addresses?.get(0)?.countryName
+                val markerTitle = "Marker in $countryName"
+                if (marker != null) {
+                    marker?.remove()
+                }
+                marker = map.addMarker(MarkerOptions().position(latLng).title(markerTitle))
+
+
             }
-            marker = map.addMarker(MarkerOptions().position(latLng).title(markerTitle))
-
-
         }
     }
 
@@ -74,73 +80,91 @@ class FavMaps : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.favmap) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
-        search = view.findViewById(R.id.SearchEdt)
-        sharedPreferences =
-            requireActivity().getSharedPreferences("FavPreferences", Context.MODE_PRIVATE)
-        fav = view.findViewById(R.id.done)
-        favoriteViewModelFactory = FavoriteViewModelFactory(
-            Repository.getInstance(
-                WeatherClient.getInstance(),
-                ConcreteLocalSource.getInstance(requireContext())
+
+            mapFragment?.getMapAsync(callback)
+
+            search = view.findViewById(R.id.SearchEdt)
+            sharedPreferences =
+                requireActivity().getSharedPreferences("FavPreferences", Context.MODE_PRIVATE)
+            fav = view.findViewById(R.id.done)
+
+            var langShared =
+                requireActivity().getSharedPreferences("language", Context.MODE_PRIVATE)
+            var Temp_shared = requireActivity().getSharedPreferences("temp", Context.MODE_PRIVATE)
+            var lan = langShared.getString("language", "")!!
+            var temper = Temp_shared.getString("temp", "")!!
+            favoriteViewModelFactory = FavoriteViewModelFactory(
+                Repository.getInstance(
+                    WeatherClient.getInstance(),
+                    ConcreteLocalSource.getInstance(requireContext())
+                )
             )
-        )
-       var langShared = requireActivity().getSharedPreferences("language", Context.MODE_PRIVATE)
-       var Temp_shared = requireActivity().getSharedPreferences("temp", Context.MODE_PRIVATE)
-       var lan = langShared.getString("language", "")!!
-        var temper = Temp_shared.getString("temp", "")!!
-        favoriteViewModel =
-            ViewModelProvider(this, favoriteViewModelFactory).get(FavoriteViewModel::class.java)
-        fav.setOnClickListener {
-            view.findNavController().navigate(R.id.maps_fav)
-            favoriteViewModel.addToFavorite(addresses!!.get(0).longitude ,addresses!!.get(0).longitude , lan , temper)
-                }
-
-        search.setOnEditorActionListener { textView, i, keyEvent ->
-            if (i == EditorInfo.IME_ACTION_SEARCH || i == EditorInfo.IME_ACTION_DONE
-                || keyEvent.action == KeyEvent.ACTION_DOWN
-                || keyEvent.keyCode == KeyEvent.KEYCODE_ENTER
-            ) {
-                goToSearchLocation()
-                true
-            } else {
-                false
-            }
-        }
-    }
-
-    fun goToSearchLocation() {
-        val searchedt: String = search.text.toString().trim()
-        if (searchedt.isNotEmpty()) {
-            val geocoder = Geocoder(requireContext())
-            val addresses: List<Address> =
-                geocoder.getFromLocationName(searchedt, 1) as List<Address>
-            if (addresses.isNotEmpty()) {
-                val address: Address = addresses[0]
-                val latitude: Double = address.latitude
-                val longitude: Double = address.longitude
-                gotoLangLan(latitude, longitude, 17f)
-
-
-            } else {
-
-            }
+            favoriteViewModel =
+                ViewModelProvider(this, favoriteViewModelFactory).get(FavoriteViewModel::class.java)
+        if (NetworkUtils.getConnectivity(requireContext()) == false) {
+            fav.visibility = View.GONE
+            Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_SHORT).show()
         } else {
+            fav.setOnClickListener {
+                view.findNavController().navigate(R.id.maps_fav)
+                favoriteViewModel.addToFavorite(
+                    addresses!!.get(0).longitude,
+                    addresses!!.get(0).longitude,
+                    lan,
+                    temper
+                )
+            }
+
+
+
+
+            search.setOnEditorActionListener { textView, i, keyEvent ->
+                if (i == EditorInfo.IME_ACTION_SEARCH || i == EditorInfo.IME_ACTION_DONE
+                    || keyEvent.action == KeyEvent.ACTION_DOWN
+                    || keyEvent.keyCode == KeyEvent.KEYCODE_ENTER
+                ) {
+                    goToSearchLocation()
+                    true
+                } else {
+                    false
+                }
+            }
+        }
+
+    }
+        fun goToSearchLocation() {
+            val searchedt: String = search.text.toString().trim()
+            if (searchedt.isNotEmpty()) {
+                val geocoder = Geocoder(requireContext())
+                val addresses: List<Address> =
+                    geocoder.getFromLocationName(searchedt, 1) as List<Address>
+                if (addresses.isNotEmpty()) {
+                    val address: Address = addresses[0]
+                    val latitude: Double = address.latitude
+                    val longitude: Double = address.longitude
+                    gotoLangLan(latitude, longitude, 17f)
+
+
+                } else {
+
+                }
+            } else {
+
+            }
+
 
         }
 
-
-    }
-
-    fun gotoLangLan(latitude: Double, longitude: Double, fl: Float) {
-        var latLng = LatLng(latitude, longitude)
-        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, fl)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.favmap) as SupportMapFragment
-        mapFragment.getMapAsync { googleMap ->
-            googleMap.animateCamera(cameraUpdate)
+        fun gotoLangLan(latitude: Double, longitude: Double, fl: Float) {
+            var latLng = LatLng(latitude, longitude)
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, fl)
+            val mapFragment =
+                childFragmentManager.findFragmentById(R.id.favmap) as SupportMapFragment
+            mapFragment.getMapAsync { googleMap ->
+                googleMap.animateCamera(cameraUpdate)
+            }
         }
     }
-}
 
 
 

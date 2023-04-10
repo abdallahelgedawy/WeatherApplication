@@ -16,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -24,6 +25,7 @@ import com.example.weatherapplication.R
 import com.example.weatherapplication.dB.ConcreteLocalSource
 import com.example.weatherapplication.model.Data
 import com.example.weatherapplication.model.Repository
+import com.example.weatherapplication.network.NetworkUtils
 import com.example.weatherapplication.network.WeatherClient
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
@@ -31,51 +33,59 @@ import java.util.concurrent.Flow
 
 class AlarmReceiver : BroadcastReceiver(){
     override fun onReceive(p0: Context?, p1: Intent?) {
-        var repo =Repository.getInstance(WeatherClient.getInstance() , ConcreteLocalSource.getInstance(p0!!))
-     val sharedPreferences =p0.getSharedPreferences("api" , Context.MODE_PRIVATE)
-        val shared = p0.getSharedPreferences("notification_alarm" , Context.MODE_PRIVATE)
-        val notification = shared.getString("notification" , "")
-        val lat = sharedPreferences.getInt("latitude" , 0)
-        val long = sharedPreferences.getInt("longitude" , 0)
-        val units = sharedPreferences.getString("units" , "")
-        val lang = sharedPreferences.getString("language" , "")
-        CoroutineScope(Dispatchers.IO).launch {
-            var data = repo.getData(lat.toDouble(), long.toDouble(), units!!, lang!!).collect() {
-                if (notification == "Notification") {
-                    val intent = Intent(p0!!, MainActivity::class.java)
-                    intent!!.flags =
-                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    val pendingIntent = PendingIntent.getActivity(p0, 0, intent, 0)
-                    val builder = NotificationCompat.Builder(p0!!, "gedo")
-                        .setSmallIcon(R.drawable.ic_launcher_background)
-                        .setContentTitle(it.timezone)
-                        .setContentText(it.current.temp.toString())
-                        .setAutoCancel(true)
-                        .setDefaults(NotificationCompat.DEFAULT_ALL)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setContentIntent(pendingIntent)
-                    val notficationManager = NotificationManagerCompat.from(p0)
-                    if (ActivityCompat.checkSelfPermission(
-                            p0,
-                            Manifest.permission.POST_NOTIFICATIONS
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
+        var repo = Repository.getInstance(
+            WeatherClient.getInstance(),
+            ConcreteLocalSource.getInstance(p0!!)
+        )
+        val sharedPreferences = p0.getSharedPreferences("api", Context.MODE_PRIVATE)
+        val shared = p0.getSharedPreferences("notification_alarm", Context.MODE_PRIVATE)
+        val notification = shared.getString("notification", "")
+        val lat = sharedPreferences.getInt("latitude", 0)
+        val long = sharedPreferences.getInt("longitude", 0)
+        val units = sharedPreferences.getString("units", "")
+        val lang = sharedPreferences.getString("language", "")
+        if (NetworkUtils.getConnectivity(p0) == false) {
+            Toast.makeText(p0, "No Internet Connection", Toast.LENGTH_SHORT).show()
+        } else {
+            CoroutineScope(Dispatchers.IO).launch {
+                var data =
+                    repo.getData(lat.toDouble(), long.toDouble(), units!!, lang!!).collect() {
+                        if (notification == "Notification") {
+                            val intent = Intent(p0!!, MainActivity::class.java)
+                            intent!!.flags =
+                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            val pendingIntent = PendingIntent.getActivity(p0, 0, intent, 0)
+                            val builder = NotificationCompat.Builder(p0!!, "gedo")
+                                .setSmallIcon(R.drawable.ic_launcher_background)
+                                .setContentTitle(it.timezone)
+                                .setContentText(it.current.temp.toString())
+                                .setAutoCancel(true)
+                                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setContentIntent(pendingIntent)
+                            val notficationManager = NotificationManagerCompat.from(p0)
+                            if (ActivityCompat.checkSelfPermission(
+                                    p0,
+                                    Manifest.permission.POST_NOTIFICATIONS
+                                ) != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                // TODO: Consider calling
+                                //    ActivityCompat#requestPermissions
+                                // here to request the missing permissions, and then overriding
+                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                //                                          int[] grantResults)
+                                // to handle the case where the user grants the permission. See the documentation
+                                // for ActivityCompat#requestPermissions for more details.
+
+                            }
+                            notficationManager.notify(15, builder.build())
+
+                        }
+                        if (notification == "Alarm") {
+                            setAlarm(p0, it.current.weather.get(0).description)
+                        }
 
                     }
-                    notficationManager.notify(15, builder.build())
-
-                }
-                if (notification == "Alarm") {
-                    setAlarm(p0, it.current.weather.get(0).description)
-                }
-
             }
         }
     }

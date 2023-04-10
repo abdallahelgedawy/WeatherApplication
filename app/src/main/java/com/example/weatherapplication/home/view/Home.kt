@@ -22,30 +22,24 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.weatherapplication.maps.MapsFragment
 import com.example.weatherapplication.R
 import com.example.weatherapplication.dB.ConcreteLocalSource
-import com.example.weatherapplication.dB.DataDao
 import com.example.weatherapplication.home.viewModel.HomeViewModel
 import com.example.weatherapplication.home.viewModel.HomeViewModelFactory
+import com.example.weatherapplication.maps.MapsFragment
 import com.example.weatherapplication.model.Repository
 import com.example.weatherapplication.network.ApiState
+import com.example.weatherapplication.network.NetworkUtils
 import com.example.weatherapplication.network.WeatherClient
 import com.example.weatherapplication.settings.Settings1
 import com.google.android.gms.location.*
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 
 const val Permission_ID = 15
@@ -92,6 +86,7 @@ class Home : Fragment() {
     lateinit var temper: String
     lateinit var sharedPreferences : SharedPreferences
     lateinit var loading : ProgressBar
+    lateinit var networkUtils: NetworkUtils
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,7 +143,9 @@ class Home : Fragment() {
         settings = Settings1()
         Temp_shared = requireActivity().getSharedPreferences("temp", Context.MODE_PRIVATE)
         sharedPreferences = requireActivity().getSharedPreferences("api", Context.MODE_PRIVATE)
-
+        if (NetworkUtils.getConnectivity(requireContext()) == false) {
+            Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_SHORT).show()
+        } else {
         requestNewLocationData()
         homeViewModelFactory = HomeViewModelFactory(
             Repository.getInstance
@@ -157,73 +154,74 @@ class Home : Fragment() {
             )
         )
         homeViewModel = ViewModelProvider(this, homeViewModelFactory).get(HomeViewModel::class.java)
+            lifecycleScope.launch {
+                homeViewModel.mydata.collectLatest {
+                    when (it) {
+                        is ApiState.loading -> {
 
-        // homeViewModel.mydata.observe(requireActivity()) {
-        lifecycleScope.launch {
-            homeViewModel.mydata.collectLatest {
-                when (it) {
-                    is ApiState.loading -> {
-
-                    }
-                    is ApiState.Success -> {
-                        loading.visibility = View.GONE
-                        var simpleDate = SimpleDateFormat("dd/M/yyyy")
-                        var currentDate = simpleDate.format(it.x.current.dt * 1000L)
-                        Log.i("TAG", "onViewCreated: " + it)
-                        val url =
-                            "https://openweathermap.org/img/wn/${it.x.current.weather.get(0).icon}@2x.png"
-                        country.text = it.x.timezone
-                        description.text = it.x.current.weather.get(0).description
-                        Glide.with(requireContext()).load(url).into(icon1)
-                        temp.text = it.x.current.temp.toString()
-                        d_t.text = currentDate.toString()
-                        adapter = HoursAdapter(it.x.hourly, requireContext())
-                        mylayoutManager =
-                            LinearLayoutManager(
-                                requireContext(),
-                                LinearLayoutManager.HORIZONTAL,
-                                false
-                            )
-                        img_humidity.setImageResource(R.drawable.humidity)
-                        recyclerView.adapter = adapter
-                        recyclerView.layoutManager = mylayoutManager
-                        adapter.setList(it.x.hourly)
-                        adapter.notifyDataSetChanged()
-                        desc_hum.text = it.x.current.humidity.toString() + "%"
-                        img_pressure.setImageResource(R.drawable.pressure)
-                        descpress.text = it.x.current.pressure.toString() + " hpa"
-                        img_wind.setImageResource(R.drawable.wind)
-                        desc_wind.text = it.x.current.wind_speed.toString()
-                        img_cloud.setImageResource(R.drawable.cloud)
-                        desc_cloud.text = it.x.current.clouds.toString() + "%"
-                        img_uvi.setImageResource(R.drawable.uvi)
-                        desc_uvi.text = it.x.current.uvi.toString()
-                        img_vis.setImageResource(R.drawable.visibility)
-                        desc_vis.text = it.x.current.visibility.toString() + "m"
-                        adapterweeks = WeeksAdapter(it.x.daily, requireContext())
-                        mylayoutManagerweeks = LinearLayoutManager(requireContext())
-                        recyclervieweeks.adapter = adapterweeks
-                        recyclervieweeks.layoutManager = mylayoutManagerweeks
-                        adapterweeks.setList(it.x.daily)
-                        adapterweeks.notifyDataSetChanged()
-                    }
-                    else -> {
-
-                        Toast.makeText(
-                            requireContext(),
-                            "check your connection",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+                        }
+                        is ApiState.Success -> {
+                            loading.visibility = View.GONE
+                            var simpleDate = SimpleDateFormat("dd/M/yyyy")
+                            var currentDate = simpleDate.format(it.x.current.dt * 1000L)
+                            Log.i("TAG", "onViewCreated: " + it)
+                            val url =
+                                "https://openweathermap.org/img/wn/${it.x.current.weather.get(0).icon}@2x.png"
+                            country.text = it.x.timezone
+                            description.text = it.x.current.weather.get(0).description
+                            Glide.with(requireContext()).load(url).into(icon1)
+                            temp.text = it.x.current.temp.toString()
+                            d_t.text = currentDate.toString()
+                            adapter = HoursAdapter(it.x.hourly, requireContext())
+                            mylayoutManager =
+                                LinearLayoutManager(
+                                    requireContext(),
+                                    LinearLayoutManager.HORIZONTAL,
+                                    false
+                                )
+                            img_humidity.setImageResource(R.drawable.humidity)
+                            recyclerView.adapter = adapter
+                            recyclerView.layoutManager = mylayoutManager
+                            adapter.setList(it.x.hourly)
+                            adapter.notifyDataSetChanged()
+                            desc_hum.text = it.x.current.humidity.toString() + "%"
+                            img_pressure.setImageResource(R.drawable.pressure)
+                            descpress.text = it.x.current.pressure.toString() + " hpa"
+                            img_wind.setImageResource(R.drawable.wind)
+                            desc_wind.text = it.x.current.wind_speed.toString()
+                            img_cloud.setImageResource(R.drawable.cloud)
+                            desc_cloud.text = it.x.current.clouds.toString() + "%"
+                            img_uvi.setImageResource(R.drawable.uvi)
+                            desc_uvi.text = it.x.current.uvi.toString()
+                            img_vis.setImageResource(R.drawable.visibility)
+                            desc_vis.text = it.x.current.visibility.toString() + "m"
+                            adapterweeks = WeeksAdapter(it.x.daily, requireContext())
+                            mylayoutManagerweeks = LinearLayoutManager(requireContext())
+                            recyclervieweeks.adapter = adapterweeks
+                            recyclervieweeks.layoutManager = mylayoutManagerweeks
+                            adapterweeks.setList(it.x.daily)
+                            adapterweeks.notifyDataSetChanged()
+                        }
+                        else -> {
+                            if (requireContext() != null) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "check your connection",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+                        }
                     }
 
                 }
-
             }
         }
     }
 
+
     @SuppressLint("MissingPermission", "SuspiciousIndentation")
+
     private fun CheckPermission(): Boolean {
         val result = ActivityCompat.checkSelfPermission(
             requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION
@@ -315,7 +313,10 @@ class Home : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        getLastLocation()
-
+        if (NetworkUtils.getConnectivity(requireContext()) == false) {
+            Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_SHORT).show()
+        } else {
+            getLastLocation()
+        }
     }
 }
